@@ -22,6 +22,33 @@ AppDataSource.initialize()
     console.error('Ошибка подключения к базе данных:', error);
   });
 
+// Mock данные для задач (временное решение)
+const mockTasks = [
+  {
+    id: 1,
+    title: 'Первая задача',
+    description: 'Описание',
+    completed: false
+  },
+  {
+    id: 2,
+    title: 'Вторая задача',
+    description: 'Описание второй задачи',
+    completed: false
+  },
+  {
+    id: 3,
+    title: 'Третья задача',
+    description: 'Описание третьей задачи',
+    completed: true
+  }
+];
+
+// Получить все задачи (mock данные)
+app.get('/api/tasks', (req, res) => {
+  res.json(mockTasks);
+});
+
 // Получить все задачи
 app.get('/api/todos', async (req, res) => {
   try {

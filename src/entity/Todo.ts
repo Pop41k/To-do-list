@@ -25,4 +25,3 @@ export class Todo {
   @UpdateDateColumn()
   updatedAt!: Date;
 }
-

@@ -26,94 +26,6 @@
   margin-bottom: 15px;
 }
 
-.user-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #4a4a4a;
-  border-radius: 8px;
-  color: #fff;
-}
-
-.user-info p {
-  margin: 0;
-}
-
-.logout-button {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.logout-button:hover {
-  background: #dc2626;
-}
-
-.auth-section {
-  margin-bottom: 30px;
-}
-
-.auth-form {
-  background: #4a4a4a;
-  padding: 25px;
-  border-radius: 8px;
-  max-width: 400px;
-  margin: 0 auto 20px;
-}
-
-.auth-form h3 {
-  color: #fff;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.auth-form input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #6b6b6b;
-  border-radius: 6px;
-  background: #3a3a3a;
-  color: #fff;
-  font-size: 16px;
-  margin-bottom: 15px;
-}
-
-.auth-form input:focus {
-  outline: none;
-  border-color: #8b5cf6;
-}
-
-.auth-form input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.auth-form button {
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-.auth-form p {
-  color: #ccc;
-  text-align: center;
-  font-size: 14px;
-}
-
-.auth-form a {
-  color: #8b5cf6;
-  text-decoration: none;
-}
-
-.auth-form a:hover {
-  text-decoration: underline;
-}
-
 .todo-list-box {
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   padding: 25px;
@@ -291,12 +203,6 @@
     font-size: 24px;
   }
 
-  .user-info {
-    flex-direction: column;
-    gap: 10px;
-    align-items: flex-start;
-  }
-
   .todo-list-box {
     padding: 15px;
   }
@@ -321,10 +227,6 @@
 
 @media (max-width: 480px) {
   .section {
-    padding: 15px;
-  }
-
-  .auth-form {
     padding: 15px;
   }
 

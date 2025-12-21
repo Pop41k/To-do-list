@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import TodoPage from './pages/TodoPage';
+import TasksPage from './pages/TasksPage';
 import './App.css';
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/todo" element={<TodoPage />} />
+        <Route path="/tasks" element={<TasksPage />} />
       </Routes>
     </Router>
   );
