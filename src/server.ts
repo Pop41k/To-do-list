@@ -292,10 +292,8 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Fallback роут для React Router (только в production)
-// Важно: этот роут должен быть последним, после всех API роутов
+// Fallback роут для React Router
 app.get('*', (req, res) => {
-  // Если запрос к API, но endpoint не найден
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ 
       error: 'API endpoint не найден',
@@ -321,7 +319,6 @@ app.get('*', (req, res) => {
   if (fs.existsSync(indexHtmlPath)) {
     res.sendFile(indexHtmlPath);
   } else {
-    // В development показываем информационное сообщение
     res.status(404).json({ 
       message: 'Backend API сервер',
       info: 'В режиме разработки фронтенд работает отдельно на порту 3001',
@@ -332,7 +329,6 @@ app.get('*', (req, res) => {
   }
 });
 
-// Запуск сервера
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
