@@ -1,0 +1,291 @@
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/Montserrat-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+.cm-page {
+  background: #ececec;
+  min-height: 100vh;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.cm-container {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0;
+  padding: 60px 32px;
+  padding-bottom: 220px;
+}
+
+.cm-titleBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  font-size: 46px;
+  font-weight: 700;
+  color: #1f2733;
+
+  cursor: pointer;
+  text-align: left;
+}
+
+.cm-titleBtn:hover {
+  opacity: 0.85;
+}
+
+.cm-topRow {
+  margin-top: 45px;
+  padding-left: 80px;         
+  display: flex;
+  align-items: flex-start;     
+  justify-content: flex-start; 
+  gap: clamp(24px, 6vw, 140px);
+}
+
+.cm-tabs {
+  display: flex;
+  gap: 70px;
+}
+
+.cm-tabsRow {
+  margin-top: 45px;
+  padding-left: 80px; 
+}
+
+.cm-createWrap {
+  margin-top: 0; 
+}
+
+.cm-createWrapBottom {
+  margin-top: 90px;
+  padding-left: 80px; 
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  padding-left: 80px;
+  padding-bottom: 48px;
+  z-index: 50;
+}
+
+.cm-createWrapBottom .cm-createBtn {
+  display: inline-flex;
+}
+
+.cm-tab {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2733;
+
+  padding: 6px 0;
+}
+
+.cm-tab.active {
+  border-bottom: 4px solid #1f2733;
+}
+
+.cm-createBtn {
+  width: 290px;
+  height: 95px;
+
+  border-radius: 22px;
+
+  background: #5b57d6;
+  border: none;
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.18);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.cm-createInner {
+  width: 242px;
+  height: 52px;
+
+  background: #ffffff;
+  border-radius: 999px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 23px;
+  font-weight: 700;
+  color: #1f2733;
+}
+
+.cm-shiftLeft {
+  margin-left: 0;
+}
+
+.cm-list {
+  margin-top: 60px;
+}
+
+.cm-taskRow {
+  display: grid;
+  grid-template-columns: 90px 1fr; 
+  column-gap: 6px;                
+
+  align-items: center;
+  margin-top: 34px;
+}
+
+.cm-taskMain {
+  display: flex;
+  align-items: center;            
+  width: 100%;
+  gap: 48px;
+  justify-content: space-between;
+}
+
+.cm-check {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  width: 72px;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.cm-box {
+  width: 55px;
+  height: 55px;
+
+  border-radius: 16px;
+  border: 4px solid #b7b7b7;
+
+  position: relative;
+}
+
+.cm-box.checked::after {
+  content: "";
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 14px;
+  height: 30px;
+
+  border: solid #46d85d;
+  border-width: 0 5px 5px 0;
+
+  transform: translate(-40%, -55%) rotate(45deg);
+}
+
+.cm-taskText {
+  font-size: 40px;
+  font-weight: 400;
+  color: #1f2733;
+  line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cm-taskText.done {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.cm-delete {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ff2a2a;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.cm-modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.cm-modal {
+  width: min(920px, calc(100vw - 80px));
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.25);
+  padding: 48px 56px;
+}
+
+.cm-modalTitle {
+  font-size: 44px;
+  font-weight: 400;
+  color: #1f2733;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.cm-modalField {
+  background: #dcdcdc;
+  border-radius: 18px;
+  padding: 34px 36px;
+  margin: 0 auto 36px;
+}
+
+.cm-modalInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 40px;
+  font-weight: 400;
+  color: #1f2733;
+}
+
+.cm-modalSubmit {
+  display: block;
+  margin: 0 auto;
+
+  width: min(520px, 100%);
+  height: 86px;
+
+  border: none;
+  border-radius: 999px;
+  background: #5b57d6;
+
+  color: #ffffff;
+  font-size: 34px;
+  font-weight: 400;
+
+  cursor: pointer;
+}
+
+.cm-modalSubmit:hover {
+  opacity: 0.92;
+}
