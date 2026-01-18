@@ -1,19 +1,55 @@
+/**
+ * Конфигурация TypeScript для бэкенда (серверной части приложения)
+ * 
+ * Этот файл определяет параметры компиляции TypeScript для Node.js сервера.
+ * TypeScript компилируется в JavaScript (ES2020) и сохраняется в папку dist/.
+ */
+
 {
   "compilerOptions": {
+    // Целевая версия ECMAScript для компиляции (ES2020 - современный стандарт)
     "target": "ES2020",
+    
+    // Система модулей: commonjs (стандарт для Node.js)
     "module": "commonjs",
+    
+    // Библиотеки TypeScript, доступные для использования (ES2020 API)
     "lib": ["ES2020"],
+    
+    // Выходная директория для скомпилированных JavaScript файлов
     "outDir": "./dist",
+    
+    // Корневая директория исходных TypeScript файлов
     "rootDir": "./src",
+    
+    // Включение строгого режима TypeScript (строгая проверка типов)
     "strict": true,
+    
+    // Совместимость с модулями ES6 (разрешает import из commonjs модулей)
     "esModuleInterop": true,
+    
+    // Пропуск проверки типов в декларациях библиотек (ускоряет компиляцию)
     "skipLibCheck": true,
+    
+    // Принудительное соблюдение регистра символов в именах файлов
     "forceConsistentCasingInFileNames": true,
+    
+    // Разрешение импорта JSON файлов как модулей
     "resolveJsonModule": true,
+    
+    // Стратегия разрешения модулей: node (стандарт Node.js)
     "moduleResolution": "node",
+    
+    // Включение поддержки декораторов (необходимо для TypeORM)
     "experimentalDecorators": true,
+    
+    // Генерация метаданных для декораторов (необходимо для TypeORM)
     "emitDecoratorMetadata": true
   },
+  
+  // Включаемые файлы и папки для компиляции (все файлы из папки src)
   "include": ["src/**/*"],
+  
+  // Исключаемые файлы и папки из компиляции
   "exclude": ["node_modules", "dist", "frontend"]
 }
