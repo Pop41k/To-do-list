@@ -1,3 +1,9 @@
+/**
+ * Конфигурация TypeScript для бэкенда
+ * Этот файл определяет параметры компиляции TypeScript для Node.js сервера.
+ * TypeScript компилируется в JavaScript (ES2020) и сохраняется в папку dist/.
+ */
+
 {
   "compilerOptions": {
     "target": "ES2020",
