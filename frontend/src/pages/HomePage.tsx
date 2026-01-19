@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
 import { useState, useRef, useLayoutEffect } from "react";
-import { createOrGetUser } from "../api/users";
 
 import bgLeft from "../bg/bg-left.png";
 import bgRight from "../bg/bg-right.png";
@@ -26,8 +25,6 @@ export default function HomePage() {
 
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const measureRef = useRef<HTMLSpanElement | null>(null);
   const [inputWidth, setInputWidth] = useState<number>(220);
@@ -50,27 +47,11 @@ export default function HomePage() {
 
   const isEmailValid = email.trim().includes("@") && email.trim().includes(".");
 
-  const submitEmail = async () => {
+  const submitEmail = () => {
     if (!isEmailValid) return;
 
-    setIsSaving(true);
-    setError(null);
-
-    try {
-      // Сохраняем пользователя в базу данных
-      await createOrGetUser(email.trim());
-      console.log('Пользователь сохранен:', email.trim());
-      
-      // Закрываем модалку и переходим на страницу задач
-      closeModal();
-      navigate("/tasks");
-    } catch (err) {
-      console.error('Ошибка сохранения пользователя:', err);
-      setError(err instanceof Error ? err.message : 'Ошибка сохранения пользователя');
-      // Не закрываем модалку при ошибке, чтобы пользователь мог попробовать снова
-    } finally {
-      setIsSaving(false);
-    }
+    closeModal();
+    navigate("/tasks");
   };
 
   return (
@@ -157,36 +138,22 @@ export default function HomePage() {
                 submitEmail();
               }}
             >
-              {error && (
-                <div style={{ 
-                  color: 'red', 
-                  fontSize: '14px', 
-                  marginBottom: '10px',
-                  textAlign: 'center'
-                }}>
-                  {error}
-                </div>
-              )}
               <input
                 className="hp-emailInput"
                 placeholder="Ваша почта"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError(null); // Очищаем ошибку при изменении email
-                }}
+                onChange={(e) => setEmail(e.target.value)}
                 style={{ width: inputWidth }}
                 autoFocus
-                disabled={isSaving}
               />
 
               <button
                 className="hp-emailBtn"
                 type="submit"
-                disabled={!isEmailValid || isSaving}
-                title={!isEmailValid ? "Введите корректную почту" : isSaving ? "Сохранение..." : "Продолжить"}
+                disabled={!isEmailValid}
+                title={!isEmailValid ? "Введите корректную почту" : "Продолжить"}
               >
-                {isSaving ? "..." : "OK"}
+                OK
               </button>
             </form>
 
