@@ -44,6 +44,29 @@
   opacity: 0.85;
 }
 
+.cm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cm-logoutBtn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cm-logoutBtn:hover {
+  background: #cc3333;
+}
+
 .cm-topRow {
   margin-top: 45px;
   padding-left: 80px;         

@@ -1,9 +1,29 @@
 import { Task } from "../types/task";
+import { getUserEmail } from "../utils/email";
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
+/**
+ * Создает заголовки для API запросов, включая email пользователя
+ */
+function createHeaders(additionalHeaders?: Record<string, string>): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...additionalHeaders
+  };
+
+  const userEmail = getUserEmail();
+  if (userEmail) {
+    headers['X-User-Email'] = userEmail;
+  }
+
+  return headers;
+}
+
 export async function getTasks(): Promise<Task[]> {
-  const res = await fetch(`${API_URL}/tasks`);
+  const res = await fetch(`${API_URL}/tasks`, {
+    headers: createHeaders()
+  });
   if (!res.ok) {
     throw new Error(`Ошибка запроса задач: ${res.status}`);
   }
@@ -13,7 +33,7 @@ export async function getTasks(): Promise<Task[]> {
 export async function createTask(title: string): Promise<Task> {
   const res = await fetch(`${API_URL}/todos`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: createHeaders(),
     body: JSON.stringify({ text: title })
   });
   if (!res.ok) {
@@ -31,7 +51,7 @@ export async function createTask(title: string): Promise<Task> {
 export async function updateTask(id: string, completed: boolean): Promise<Task> {
   const res = await fetch(`${API_URL}/todos/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: createHeaders(),
     body: JSON.stringify({ completed })
   });
   if (!res.ok) {
@@ -48,7 +68,8 @@ export async function updateTask(id: string, completed: boolean): Promise<Task> 
 
 export async function deleteTask(id: string): Promise<void> {
   const res = await fetch(`${API_URL}/todos/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
+    headers: createHeaders()
   });
   if (!res.ok) {
     throw new Error(`Ошибка удаления задачи: ${res.status}`);

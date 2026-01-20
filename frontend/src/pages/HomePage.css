@@ -653,3 +653,27 @@
   outline-offset: 6px;
   border-radius: 10px;
 }
+
+.hp-changeUserBtn {
+  width: 460px;
+  max-width: 100%;
+  height: 60px;
+  border: 2px solid #9a95ff;
+  border-radius: 12px;
+  background: transparent;
+  color: #9a95ff;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.hp-changeUserBtn:hover {
+  background: #9a95ff;
+  color: #ffffff;
+}
+
+.hp-changeUserBtn:active {
+  transform: translateY(1px);
+}

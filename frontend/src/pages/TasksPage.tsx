@@ -4,7 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './TasksPage.css';
+import { hasUserEmail } from '../utils/email';
 
 interface Task {
   id: number;
@@ -16,9 +18,18 @@ interface Task {
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 const TasksPage: React.FC = () => {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Проверяем наличие email при загрузке страницы
+  useEffect(() => {
+    if (!hasUserEmail()) {
+      navigate("/");
+      return;
+    }
+  }, [navigate]);
 
   useEffect(() => {
     loadTasks();

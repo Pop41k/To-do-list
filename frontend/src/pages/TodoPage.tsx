@@ -5,6 +5,7 @@ import { getTasks, createTask, updateTask, deleteTask as deleteTaskApi } from ".
 import { Task } from "../types/task";
 import CreateTaskModal from "../components/CreateTaskModal";
 import { useNavigate } from "react-router-dom";
+import { hasUserEmail, clearUserEmail, getUserEmail } from "../utils/email";
 
 
 type Filter = "all" | "active" | "completed";
@@ -19,6 +20,20 @@ export default function TodoPage() {
 
   const [filter, setFilter] = useState<Filter>("all");
 
+  // Функция выхода (очистка email и переход на главную)
+  const handleLogout = () => {
+    clearUserEmail();
+    navigate("/");
+  };
+
+  // Проверяем наличие email при загрузке страницы
+  useEffect(() => {
+    if (!hasUserEmail()) {
+      navigate("/");
+      return;
+    }
+  }, [navigate]);
+
   useEffect(() => {
     getTasks()
       .then((data) => setTasks(data))
@@ -31,7 +46,7 @@ export default function TodoPage() {
     if (!task) return;
 
     const newCompleted = !task.completed;
-    
+
     // Оптимистичное обновление UI
     setTasks((prev) =>
       prev.map((t) => (t.id === id ? { ...t, completed: newCompleted } : t))
@@ -111,10 +126,17 @@ export default function TodoPage() {
   return (
     <div className="cm-page">
       <div className="cm-container">
-        <button className="cm-titleBtn" 
-        onClick={() => navigate("/")}>
-          Chaos Manager
-        </button>
+        <div className="cm-header">
+          <button className="cm-titleBtn"
+          onClick={() => navigate("/")}>
+            Chaos Manager
+          </button>
+          <button className="cm-logoutBtn"
+          onClick={handleLogout}
+          type="button">
+            Выйти ({getUserEmail()})
+          </button>
+        </div>
 
         <div className="cm-tabsRow">
           <div className="cm-tabs">
@@ -134,14 +156,14 @@ export default function TodoPage() {
               Активные
             </button>
 
-            <button
+                <button
               className={filter === "completed" ? "cm-tab active" : "cm-tab"}
               onClick={() => setFilter("completed")}
               type="button"
-            >
+                >
               Выполненные
-            </button>
-          </div>
+                </button>
+              </div>
         </div>
 
         <div className="cm-list">
@@ -157,13 +179,13 @@ export default function TodoPage() {
         </div>
 
         <div className="cm-createWrapBottom">
-          <button
+        <button
             className="cm-createBtn"
             onClick={() => setIsCreating(true)}
-            type="button"
-          >
+                type="button"
+              >
             <span className="cm-createInner">Создать задачу</span>
-          </button>
+              </button>
         </div>
       </div>
 

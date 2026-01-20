@@ -20,6 +20,40 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Middleware для сохранения пользователя по email из заголовка
+app.use(async (req, res, next) => {
+  const userEmail = req.headers['x-user-email'] as string;
+  console.log(`Запрос ${req.method} ${req.path}, email: ${userEmail || 'не указан'}`);
+
+  if (userEmail && userEmail.trim()) {
+    try {
+      if (dbInitialized) {
+        const userRepository = AppDataSource.getRepository(User);
+        let user = await userRepository.findOne({ where: { email: userEmail.trim() } });
+
+        if (!user) {
+          user = new User();
+          user.email = userEmail.trim();
+          await userRepository.save(user);
+          console.log('✅ Создан новый пользователь из заголовка:', user.id, user.email);
+        } else {
+          console.log('✅ Найден существующий пользователь из заголовка:', user.id, user.email);
+        }
+
+        // Добавляем информацию о пользователе в request для использования в обработчиках
+        (req as any).currentUser = user;
+      } else {
+        console.log('⚠️  БД не инициализирована, пропускаю сохранение пользователя');
+      }
+    } catch (error) {
+      console.error('❌ Ошибка сохранения пользователя из заголовка:', error);
+      // Не прерываем выполнение запроса при ошибке сохранения пользователя
+    }
+  }
+
+  next();
+});
+
 // Тестовый endpoint для проверки работы API
 app.get('/api', (req, res) => {
   res.json({ 
@@ -27,8 +61,8 @@ app.get('/api', (req, res) => {
     endpoints: {
       'GET /api': 'Информация об API',
       'GET /api/tasks': 'Получить задачи из БД',
-      'GET /api/todos': 'Получить все задачи',
-      'POST /api/todos': 'Создать задачу',
+      'GET /api/todos': 'Получить все задачи (с авто-фильтрацией по email из заголовка X-User-Email)',
+      'POST /api/todos': 'Создать задачу (автоматически привязывается к пользователю из заголовка X-User-Email)',
       'PATCH /api/todos/:id': 'Обновить задачу',
       'DELETE /api/todos/:id': 'Удалить задачу',
       'GET /api/users': 'Получить всех пользователей',
@@ -50,8 +84,6 @@ AppDataSource.initialize()
   .then(async () => {
     console.log('База данных подключена');
     dbInitialized = true;
-    // Инициализируем начальные задачи, если их нет
-    await initializeDefaultTasks();
   })
   .catch((error) => {
     console.error('Ошибка подключения к базе данных:', error);
@@ -60,38 +92,12 @@ AppDataSource.initialize()
 
 // Middleware для проверки подключения к БД
 app.use('/api', (req, res, next) => {
-  if (!dbInitialized && req.method !== 'GET' && !req.path.includes('/api')) {
+  if (!dbInitialized && req.method !== 'GET') {
     return res.status(503).json({ error: 'База данных не подключена' });
   }
   next();
 });
 
-// Функция для инициализации начальных задач в БД (если их нет)
-async function initializeDefaultTasks() {
-  try {
-    const todoRepository = AppDataSource.getRepository(Todo);
-    const count = await todoRepository.count();
-    
-    if (count === 0) {
-      const defaultTasks = [
-        { text: 'Первая задача', completed: false },
-        { text: 'Вторая задача', completed: false },
-        { text: 'Третья задача', completed: true }
-      ];
-      
-      for (const taskData of defaultTasks) {
-        const todo = new Todo();
-        todo.text = taskData.text;
-        todo.completed = taskData.completed;
-        await todoRepository.save(todo);
-      }
-      
-      console.log('Созданы начальные задачи в базе данных');
-    }
-  } catch (error) {
-    console.error('Ошибка инициализации начальных задач:', error);
-  }
-}
 
 // GET /api/tasks - получение задач из базы данных
 app.get('/api/tasks', async (req, res) => {
@@ -100,18 +106,30 @@ app.get('/api/tasks', async (req, res) => {
       return res.status(503).json({ error: 'База данных не подключена' });
     }
 
+    const currentUser = (req as any).currentUser;
     const todoRepository = AppDataSource.getRepository(Todo);
+
+    // Если есть текущий пользователь - возвращаем только его задачи
+    // Иначе - возвращаем пустой массив (новые пользователи всегда начинают с пустого списка)
+    let whereCondition: any;
+    if (currentUser) {
+      whereCondition = { userId: currentUser.id };
+    } else {
+      return res.json([]);
+    }
+
     const todos = await todoRepository.find({
+      where: whereCondition,
       order: { createdAt: 'DESC' }
     });
-    
+
     // Преобразуем формат для совместимости с фронтендом (text -> title)
     const tasks = todos.map(todo => ({
       id: todo.id,
       title: todo.text,
       completed: todo.completed
     }));
-    
+
     res.json(tasks);
   } catch (error) {
     console.error('Ошибка получения задач:', error);
@@ -119,17 +137,32 @@ app.get('/api/tasks', async (req, res) => {
   }
 });
 
-// GET /api/todos - получение всех задач (с фильтрацией по userId)
+// GET /api/todos - получение всех задач (с фильтрацией по userId или текущему пользователю)
 app.get('/api/todos', async (req, res) => {
   try {
     const userId = req.query.userId as string | undefined;
+    const currentUser = (req as any).currentUser;
+
     const todoRepository = AppDataSource.getRepository(Todo);
-    
+
+    // Если передан userId - фильтруем по нему
+    // Если есть текущий пользователь - фильтруем по его ID
+    // Иначе - возвращаем пустой массив (новые пользователи всегда начинают с пустого списка)
+    let whereCondition: any;
+    if (userId) {
+      whereCondition = { userId };
+    } else if (currentUser) {
+      whereCondition = { userId: currentUser.id };
+    } else {
+      // Для анонимных пользователей возвращаем пустой массив
+      return res.json([]);
+    }
+
     const todos = await todoRepository.find({
-      where: userId ? { userId } : { userId: IsNull() },
+      where: whereCondition,
       order: { createdAt: 'DESC' }
     });
-    
+
     res.json(todos);
   } catch (error) {
     console.error('Ошибка получения задач:', error);
@@ -141,7 +174,7 @@ app.get('/api/todos', async (req, res) => {
 app.post('/api/todos', async (req, res) => {
   try {
     const { text, userId } = req.body;
-    
+
     if (!text) {
       return res.status(400).json({ error: 'Текст задачи обязателен' });
     }
@@ -150,7 +183,8 @@ app.post('/api/todos', async (req, res) => {
     const todo = new Todo();
     todo.text = text;
     todo.completed = false;
-    todo.userId = userId || undefined;
+    // Используем userId из тела запроса или из текущего пользователя (из заголовка)
+    todo.userId = userId || ((req as any).currentUser?.id);
 
     const savedTodo = await todoRepository.save(todo);
     res.status(201).json(savedTodo);
@@ -205,7 +239,9 @@ app.delete('/api/todos/:id', async (req, res) => {
 // GET /api/users - получение всех пользователей
 app.get('/api/users', async (req, res) => {
   try {
+    console.log('Получение списка пользователей');
     if (!dbInitialized) {
+      console.log('БД не инициализирована');
       return res.status(503).json({ error: 'База данных не подключена' });
     }
 
@@ -213,14 +249,16 @@ app.get('/api/users', async (req, res) => {
     const users = await userRepository.find({
       order: { createdAt: 'DESC' }
     });
-    
+
+    console.log(`Найдено ${users.length} пользователей`);
+
     // Возвращаем только id и email (без паролей)
     const usersData = users.map(user => ({
       id: user.id,
       email: user.email,
       createdAt: user.createdAt
     }));
-    
+
     res.json(usersData);
   } catch (error) {
     console.error('Ошибка получения пользователей:', error);

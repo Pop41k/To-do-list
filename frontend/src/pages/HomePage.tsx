@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useEffect } from "react";
+import { saveUserEmail, hasUserEmail } from "../utils/email";
 
 import bgLeft from "../bg/bg-left.png";
 import bgRight from "../bg/bg-right.png";
@@ -25,6 +26,7 @@ export default function HomePage() {
 
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [hasExistingEmail, setHasExistingEmail] = useState(false);
 
   const measureRef = useRef<HTMLSpanElement | null>(null);
   const [inputWidth, setInputWidth] = useState<number>(220);
@@ -40,6 +42,12 @@ export default function HomePage() {
     setInputWidth(Math.min(max, Math.max(min, w)));
   }, [email]);
 
+  // Проверяем наличие сохраненного email при загрузке
+  useEffect(() => {
+    setHasExistingEmail(hasUserEmail());
+  }, []);
+
+
   const closeModal = () => {
     setIsEmailModalOpen(false);
     setEmail("");
@@ -49,6 +57,9 @@ export default function HomePage() {
 
   const submitEmail = () => {
     if (!isEmailValid) return;
+
+    // Сохраняем email пользователя
+    saveUserEmail(email);
 
     closeModal();
     navigate("/tasks");
@@ -104,10 +115,20 @@ export default function HomePage() {
             <button
               className="hp-btn"
               type="button"
-              onClick={() => setIsEmailModalOpen(true)}
+              onClick={() => hasExistingEmail ? navigate("/tasks") : setIsEmailModalOpen(true)}
             >
-              Перейти к To-do list
+              {hasExistingEmail ? "Продолжить с задачами" : "Перейти к To-do list"}
             </button>
+
+            {hasExistingEmail && (
+              <button
+                className="hp-changeUserBtn"
+                type="button"
+                onClick={() => setIsEmailModalOpen(true)}
+              >
+                Сменить пользователя
+              </button>
+            )}
           </div>
         </div>
 
